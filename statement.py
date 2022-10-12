@@ -27,7 +27,7 @@ async def Statement(wallet, event: hikari.DMMessageCreateEvent, page):
         numpages = round(numpages)
     pagestart = (int(page) -1) * 10
     pageend = pagestart + 10
-
+    sno = pagestart + 1
     for x in range(pagestart, pageend):
         if (x< len(reverserecs)):
             rec = reverserecs[x]

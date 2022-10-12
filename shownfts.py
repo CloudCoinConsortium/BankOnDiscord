@@ -12,11 +12,13 @@ async def ShowNFT(wallet, event: hikari.DMMessageCreateEvent):
     statementheader = ["S.No.", "SN" ,"Title","Description", ""]
     nfts = []
     sno = 1
-    # print(showresponsejson)
+    print(showresponsejson)
     if( showresponsejson['status'] != 'success'):
         await event.message.respond(showresponsejson['payload']['message'])
         return
-
+    if(showresponsejson['payload'] is None):
+        await event.message.respond('No NFTs found. Please use /nft create to create an NFT')
+        return
     for trans in showresponsejson['payload']:
         nfts.append([sno,trans['sn'], trans['hostname'], trans['description'], ''])
         sno = sno + 1
