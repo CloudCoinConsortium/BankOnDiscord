@@ -7,6 +7,7 @@ from constants import baseUrl
 from table2ascii import table2ascii as t2a, PresetStyle
 
 async def Statement(wallet, event: hikari.DMMessageCreateEvent, page):
+    wallet = wallet.replace("#","%23")
     statementUrl = baseUrl + 'wallets/' + wallet + '?contents=true' 
     response = requests.get(statementUrl)
     responsejson = response.json()

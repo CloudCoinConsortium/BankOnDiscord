@@ -9,7 +9,9 @@ import time
 async def CreateNFT(wallet, event: hikari.DMMessageCreateEvent, title: str, desc: str):
     createNFTUrl = baseUrl + 'nfts/export'
     nftWalletName = 'NFTs.' + wallet
-    nftSyncUrl = baseUrl + 'nftsync?nft_name=' + nftWalletName
+    nftWalletNameget = 'NFTs.' + wallet.replace("#","%23")
+    
+    nftSyncUrl = baseUrl + 'nftsync?nft_name=' + nftWalletNameget
     nftpath = os.path.join(os.getcwd(), 'nft')
     exportpath = os.path.join(nftpath, 'export')
     importpath = os.path.join(nftpath, 'import')
@@ -34,7 +36,6 @@ async def CreateNFT(wallet, event: hikari.DMMessageCreateEvent, title: str, desc
         nftJson = { 'name': wallet, 'amount' :1 , 'template_path': filename, 'nft_name': nftWalletName, 'domain_name': 'raidacloud.com', 'text': title, 'x': 100, "y": 100, 'font_size': 24, 'host_name' : title, 'description': desc}
         nftSyncJson = {'domain_name': 'raidacloud.com', 'host_name' : title, 'create_txt': True, 'nft_name': nftWalletName }
 
-        print(nftJson)
         json_string = json.dumps(nftJson) 
         moveresponse = requests.post(createNFTUrl, json_string)
         moveresponsejson = moveresponse.json()

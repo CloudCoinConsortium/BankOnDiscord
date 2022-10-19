@@ -6,6 +6,7 @@ from table2ascii import table2ascii as t2a, PresetStyle
 import base64
 
 async def ShowNFT(wallet, event: hikari.DMMessageCreateEvent):
+    wallet = wallet.replace("#","%23")
     showNFTUrl = baseUrl + 'nfts?nft_name=NFTs.' + wallet
     showresponse = requests.get(showNFTUrl)
     showresponsejson = showresponse.json()

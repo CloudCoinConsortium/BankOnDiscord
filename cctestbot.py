@@ -31,7 +31,7 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
 
     if not event.content:
         return
-    walletName = str(event.author).replace("#","")
+    walletName = str(event.author)
     
     mainphrases = ['/bank', '/help','/nft']
     nftphrases = ['create', 'show','help', 'withdraw']

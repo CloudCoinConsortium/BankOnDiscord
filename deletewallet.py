@@ -4,6 +4,8 @@ from constants import baseUrl
 import json
 async def DeleteWallet(wallet, event: hikari.DMMessageCreateEvent):
     print('Deleting wallet', wallet)
+    wallet = wallet.replace("#","%23")
+    nftwallet = nftwallet.replace("#","%23")
     nftwallet = "NFTs." + wallet
     deleteUrl = baseUrl + 'wallets/' + str(wallet)
     nftdeleteUrl = baseUrl + 'wallets/' + str(nftwallet)

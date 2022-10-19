@@ -3,6 +3,7 @@ import requests
 from constants import baseUrl
 
 async def ShowCoins(wallet, event: hikari.DMMessageCreateEvent):
+    wallet = wallet.replace("#","%23")
     checkWalletUrl = baseUrl + 'wallets/' + wallet
     response = requests.get(checkWalletUrl)
     responsejson = response.json()

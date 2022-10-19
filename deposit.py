@@ -9,7 +9,8 @@ import time
 from showcoins import ShowCoins
 async def Deposit(wallet, event: hikari.DMMessageCreateEvent):
     nftWalletName =  "NFTs." + wallet
-    checkWalletUrl = baseUrl + 'wallets/' + wallet + '?contents=false'
+    walletget = wallet.replace("#","%23")
+    checkWalletUrl = baseUrl + 'wallets/' + walletget + '?contents=false'
     response = requests.get(checkWalletUrl)
     responsejson = response.json()
     fullpath = os.path.join(os.getcwd(), 'import')
