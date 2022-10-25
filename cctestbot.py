@@ -125,8 +125,8 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
                 await Bet(wallet= walletName, event=event, towallet='Default', amount=amount, description= description)
 
             if(phrase == 'move'):
-                towallet = command[2]
-                amount = command[3]
+                towallet = command[3]
+                amount = command[2]
                 await Move(wallet=walletName, event=event, towallet= towallet, amount= amount)
 
     if(command[0] == '/help'):

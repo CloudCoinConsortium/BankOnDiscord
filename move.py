@@ -11,7 +11,6 @@ async def Move(wallet, event: hikari.DMMessageCreateEvent, towallet: str, amount
     print('moving from :'+ str(wallet) + ' to :', towallet, transferUrl )
     moveJson = {'srcname': wallet , 'dstname': towallet , 'amount' : int(amount), 'tag': ''}
     json_string = json.dumps(moveJson) 
-    print(json_string)
     moveresponse = requests.post(transferUrl, json_string)
     moveresponsejson = moveresponse.json()
     depositstatus = moveresponsejson['payload']['status']
