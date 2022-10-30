@@ -28,27 +28,30 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
     # If a non-bot user sends a message "hk.ping", respond with "Pong!"
     # We check there is actually content first, if no message content exists,
     # we would get `None' here.
-
+    # in case of empty content return from the routine
     if not event.content:
         return
+    # Wallet name is user name
     walletName = str(event.author)
-    
+    # the array below contain allowed command phrases. if the command phrase is anything else the bot returns an error
     mainphrases = ['/bank', '/help','/nft']
     nftphrases = ['create', 'show','help', 'withdraw']
     command = event.content.split()
 
     mainphrase = command[0].lower()
 
-    
+    # check for main phrase to be NFT command if so process NFT commands
+
     if(command[0].upper() == '/NFT'):
         if(len(command) > 1):
             phrase = command[1]
             if(not phrase in nftphrases):
+                # invalid command check
                 await event.message.respond('Invalid Command')
                 helpContent = await NFTHelp()
                 await event.message.respond(helpContent)
-
             if(phrase=='create'):
+                # validations for NFT create
                 if(len(command) == 2):
                     await event.message.respond('You must provide a title for NFT')
                     return
@@ -58,6 +61,7 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
                 title = command[2]
                 paramlength = len(command)
                 desc = ''
+                # description is all the words from index 3 onwards
                 for i in range(3, paramlength):
                     desc = desc + ' ' + command[i]
                 await CreateNFT(walletName, event= event, title= title, desc= desc)
@@ -67,6 +71,7 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
                 helpContent = await NFTHelp()
                 await event.message.respond(helpContent)
             if(phrase == 'withdraw'):
+                # serial number validation for withdraw NFT
                 if(len(command) == 2):
                     await event.message.respond('You must provide a SN to withdraw NFT')
                     return
@@ -74,14 +79,16 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
                 await WithdrawNFT(walletName, event= event, sn= sn)
 
     bankphrases = ['deposit', 'showcoins', 'balance','whatsmywallet','statement', 'deletewallet', 'withdraw', 'transfer', 'pay','help', 'move', 'bet']
-
+    # check for main phrase to be bank command if so process wallet commands
     if(command[0] == '/bank'):
         if(len(command) > 1):
             phrase = command[1]
+            # invalid phrase check for bank commands. if its an invalid command help is returned.
             if(not phrase in bankphrases):
                 await event.message.respond('Invalid Command')
                 helpContent = await Help()
                 await event.message.respond(helpContent)
+            # call respective handlers depending upon the command phrase
             if(phrase == 'deposit'):
                 await Deposit(wallet= walletName, event=event)
             if(phrase == 'showcoins'):
@@ -92,6 +99,7 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
                 await MyWallet(wallet= walletName, event=event)
             if(phrase == 'statement'):
                 page = 1
+                # default page to 1 in case of no parameter
                 if(len(command) == 2):
                     page = "1"
                 if(len(command) > 2):
@@ -136,7 +144,7 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
         else:
             helpContent = await ChooseHelp(command[1])
             await event.message.respond(helpContent)
-
+    # sample ping for bot health check
     if event.content.startswith("ping"):
         await event.message.respond(str(event.author) + "-Pong!")
 
