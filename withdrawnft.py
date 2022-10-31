@@ -8,12 +8,12 @@ import base64
 import json
 import time
 import os
-
+# withdraws an NFT from users wallet provided a given serial number
 async def WithdrawNFT(wallet, event: hikari.DMMessageCreateEvent, sn: Number):
     withdrawNFTUrl = baseUrl + 'nfts/' + sn + '/png'
     exportnftUrl = baseUrl + 'exportsns'
     nftWalletName = 'NFTs.' + wallet
-
+    # check if export folder exists, if not create one
     fullpath = os.path.join(os.getcwd(), 'nft')
     exportpath = os.path.join(fullpath, 'export')
     foldername = os.path.join(exportpath, str(wallet))
@@ -23,10 +23,7 @@ async def WithdrawNFT(wallet, event: hikari.DMMessageCreateEvent, sn: Number):
 
     print(withdrawNFTUrl)
     print(exportnftUrl)
-    #nftresponse  = requests.get(withdrawNFTUrl)
-
-    # nftresponsejson =nftresponse.json()
-    # exportresponse = requests.post(exportnftUrl)
+    # export sn to export folder 
     exportJson = {'name': nftWalletName , 'type': 'png' , 'folder' : foldername, 'tag': '', 'sns': [int(sn)]}
     json_string = json.dumps(exportJson) 
     print(json_string)
@@ -35,6 +32,7 @@ async def WithdrawNFT(wallet, event: hikari.DMMessageCreateEvent, sn: Number):
     print(exportresponsejson)
     depositstatus = exportresponsejson['payload']['status']
     TASK_URL = baseUrl + 'tasks/' + exportresponsejson['payload']['id']
+    # poll for task status till status is changed to completed
     while depositstatus == 'running':
         taskresponse = requests.get(TASK_URL)
         taskresponsejson = taskresponse.json()
@@ -43,6 +41,7 @@ async def WithdrawNFT(wallet, event: hikari.DMMessageCreateEvent, sn: Number):
             await event.message.respond("Move failed: " + taskresponsejson['payload']['data']['message'])
 
         time.sleep(1)
+        # if completed return the NFT to user and delete the file
         if(depositstatus == 'completed'):
             if(taskresponsejson['status'] == 'success'):
                 print(str(taskresponsejson['payload']['data']))
