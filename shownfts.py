@@ -4,7 +4,7 @@ from datetime import datetime
 from constants import baseUrl
 from table2ascii import table2ascii as t2a, PresetStyle
 import base64
-
+# shows list of NFTs in the users wallet
 async def ShowNFT(wallet, event: hikari.DMMessageCreateEvent):
     wallet = wallet.replace("#","%23")
     showNFTUrl = baseUrl + 'nfts?nft_name=NFTs.' + wallet
@@ -20,10 +20,11 @@ async def ShowNFT(wallet, event: hikari.DMMessageCreateEvent):
     if(showresponsejson['payload'] is None):
         await event.message.respond('No NFTs found. Please use /nft create to create an NFT')
         return
+    # parse api results into list
     for trans in showresponsejson['payload']:
         nfts.append([sno,trans['sn'], trans['hostname'], trans['description'], ''])
         sno = sno + 1
-    
+    # format nft list into table for user display
     output = t2a(
     header=statementheader,
     body=nfts,

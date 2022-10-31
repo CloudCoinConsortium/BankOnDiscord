@@ -1,12 +1,14 @@
 import hikari
 import requests
 from constants import baseUrl
-
+# shows total coins in the user balance
 async def ShowCoins(wallet, event: hikari.DMMessageCreateEvent):
     wallet = wallet.replace("#","%23")
+    # make Check wallet api call
     checkWalletUrl = baseUrl + 'wallets/' + wallet
     response = requests.get(checkWalletUrl)
     responsejson = response.json()
+    # in case of success show the balance else display 0
     if(responsejson['status'] == 'success'):
         await event.message.respond("Balance: " + str(responsejson['payload']['balance']))
     else:
