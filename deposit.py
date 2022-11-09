@@ -66,7 +66,7 @@ async def Deposit(wallet, event: hikari.DMMessageCreateEvent):
                     total = taskresponsejson['payload']['data']['pown_results']['total']
                     unknown = taskresponsejson['payload']['data']['pown_results']['unknown']
                     fracked = taskresponsejson['payload']['data']['pown_results']['fracked']
-                    await event.message.respond('Coins imported..\nTotal: ' + str(total) + '\nAuthentic: '+ str(authentic) + '\nFracked: '+ str(fracked) + '\nCounterfeit:' + str(counterfeit) + '\nUnknown: ' + str(unknown))
+                    await event.message.respond('Coins imported..\nTotal: ' + str(total) + '\nAuthentic: '+ str(authentic + fracked) +  '\nCounterfeit:' + str(counterfeit) + '\nUnknown: ' + str(unknown))
             except:
                 await event.message.respond('An Error occured while depositting '+ coin.filename + '. Please check your file or try again')
             # show the updated balance of user's wallet
