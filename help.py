@@ -31,7 +31,7 @@ async def moveHelp():
     return '\n\n**↔️ MOVE**\n`/bank move` Moves coins from your account to the account of another person.\nRequires the number of coins to move and the name of the user that will receive them: `/bank move 10 larryG#3345` where 10 is the number of coins to move and larryG#3345 is the Discord user to receive the coins. They must have an account on this bot to receive coins. '
 
 async def WithdrawHelp():
-    return '\n\n**📤 WITHDRAW**\n`/bank withdraw` Removes CloudCoins from your account.\nRequires the amount of CloudCoins to be removed: `/bank withdraw 33` where 33 is the number of CloudCoins to be removed.\nUpon clicking, Open original and save the file.'
+    return '\n\n**📤 WITHDRAW**\n`/bank withdraw` Removes CloudCoins from your account.\nRequires the amount of CloudCoins to be removed: `/bank withdraw 33` where 33 is the number of CloudCoins to be removed.\nClick image. Open original and save the file.'
 
 async def DeleteWalletHelp():
     return '\n\n** 🚫 DELETE WALLET **\nDeletes the users wallet.\n\tRequest:\n /deletewallet\nReturns:\n\tWallet Deleted\nor\n\tYour Wallet Must Be Empty to be Deleted. Withdraw your Coins first.'
