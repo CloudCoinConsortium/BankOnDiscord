@@ -14,11 +14,16 @@ from createnft import CreateNFT
 from shownfts import ShowNFT
 from withdrawnft import WithdrawNFT
 from bet import Bet
+from hikari import Client
 
 #https://patchwork.systems/programming/hikari-discord-bot/introduction-and-basic-bot.html
 
 bot = hikari.GatewayBot(token = os.environ['CCBOT_TOKEN'])
 
+client = Client(token=os.environ['CCBOT_TOKEN'])
+
+client.send_message('Navraj#6439', 'Hello, this is a message from a Discord bot!')
+print('sent')
 @bot.listen(hikari.GuildMessageCreateEvent)
 async def print_message(event):
     print(event.content)
@@ -33,6 +38,8 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
         return
     # Wallet name is user name
     walletName = str(event.author)
+    await client.send_message(event.author, 'Hello, this is a message from a Discord bot!')
+
     # the array below contain allowed command phrases. if the command phrase is anything else the bot returns an error
     mainphrases = ['/bank', '/help','/nft']
     nftphrases = ['create', 'show','help', 'withdraw']
@@ -114,12 +121,12 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
                 amount = command[2]
                 await Withdraw(wallet= walletName, event=event, amount= amount)
             if(phrase == 'transfer'):
+                towallet = command[3]
                 amount = command[2]
-                skywallet = command[3]
                 if(len(command) == 2):
                     await event.message.respond('You must provide a wallet name for transfer')
                     return
-                await Transfer(wallet= walletName, event=event, amount= amount, skywallet= skywallet)
+                await Move(wallet=walletName, event=event, towallet= towallet, amount= amount)
             if(phrase == 'pay'):
                 amount = command[2]
                 await Pay(wallet= walletName, event=event, amount=amount)
