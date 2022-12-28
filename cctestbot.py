@@ -107,6 +107,9 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
                 await Statement(wallet= walletName, event=event, page= page)
             if(phrase == 'deletewallet'):
                 await DeleteWallet(wallet= walletName, event=event)
+            if(phrase == 'deletebank'):
+                await DeleteWallet(wallet= walletName, event=event)
+
             if(phrase == 'withdraw'):
                 if(len(command) == 2):
                     await event.message.respond('You must provide an amount to withdraw Cloudcoins')

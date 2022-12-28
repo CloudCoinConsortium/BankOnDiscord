@@ -22,7 +22,7 @@ async def balanceHelp():
     return '\n\n**🔎 BALANCE**\n`/bank balance` Returns the number of coins in  your Coin Bank.\nNo extra information is required.'
 
 async def deletewalletHelp():
-    return '\n\n**🔎 DELETE WALLET **\n`/bank deletewallet` Deletes your wallet if it\'s empty.\nPlease withdraw all your coins before issuing this command.'
+    return '\n\n**🔎 DELETE WALLET **\n`/bank deletebank` Deletes your coin bank if it\'s empty.\nPlease withdraw all your coins before issuing this command.'
 
 async def payHelp():
     return "\n\n**❤️ PAY**\n`/bank pay` Places money from your account into the bot's account and tells the bot about the payment.\nRequires the number of coins to give the bot: `/bank pay 50` where 50 is the number of coins to give the bot. "
@@ -31,10 +31,10 @@ async def moveHelp():
     return '\n\n**↔️ TRANSFER**\n`/bank transfer` Transfers coins from your account to the account of another person.\nRequires the number of coins to transfer and the name of the user that will receive them: `/bank transfer 10 larryG#3345` where 10 is the number of coins to transfer and larryG#3345 is the Discord user to receive the coins. They must have a Coin Bank on this bot to receive coins. '
 
 async def WithdrawHelp():
-    return '\n\n**📤 WITHDRAW**\n`/bank withdraw` Removes CloudCoins from your Coin Bank.\nRequires the amount of CloudCoins to be removed: `/bank withdraw 33` where 33 is the number of CloudCoins to be removed.\nClick image. Open original and save the file.'
+    return '\n\n**📤 WITHDRAW**\n`/bank withdraw` Removes coins from your Coin Bank.\nRequires the amount of coins to be removed: `/bank withdraw 33` where 33 is the number of coins to be removed.\nClick image. Open original and save the file.'
 
 async def DeleteWalletHelp():
-    return '\n\n** 🚫 DELETE WALLET **\nDeletes the users wallet.\n\tRequest:\n /deletewallet\nReturns:\n\tWallet Deleted\nor\n\tYour Wallet Must Be Empty to be Deleted. Withdraw your Coins first.'
+    return '\n\n** 🚫 DELETE COIN BANK **\nDeletes the users coin bank.\n\tRequest:\n /deletebank\nReturns:\n\tWallet Deleted\nor\n\tYour Wallet Must Be Empty to be Deleted. Withdraw your Coins first.'
 
 async def ShowCoinsHelp():
     return '\n\n** 👀 SHOWCOINS **\nShows all the coins that are in the users wallet. This number includes coins in the Bank folder and in the Fracked folder.\n\tRequest:\n `/showcoins`\nReturns an integer something like:\n\t33'
