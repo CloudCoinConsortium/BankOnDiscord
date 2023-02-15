@@ -117,12 +117,12 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
                 amount = command[2]
                 await Withdraw(wallet= walletName, event=event, amount= amount)
             if(phrase == 'transfer'):
+                towallet = command[3]
                 amount = command[2]
-                skywallet = command[3]
                 if(len(command) == 2):
                     await event.message.respond('You must provide a wallet name for transfer')
                     return
-                await Transfer(wallet= walletName, event=event, amount= amount, skywallet= skywallet)
+                await Transfer(wallet=walletName, event=event, towallet= towallet, amount= amount)
             if(phrase == 'pay'):
                 amount = command[2]
                 await Pay(wallet= walletName, event=event, amount=amount)
