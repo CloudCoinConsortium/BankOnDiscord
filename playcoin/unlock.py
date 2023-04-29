@@ -29,13 +29,13 @@ async def Unlock(wallet,code, event: hikari.DMMessageCreateEvent):
         taskresponse = requests.get(TASK_URL)
         taskresponsejson = taskresponse.json()
         unlockstatus = taskresponsejson['payload']['status']
+        actionstatus = taskresponsejson["status"]
         print(taskresponsejson)
         print(unlockstatus)
         time.sleep(2)
     if(unlockstatus == 'error'):
         await event.message.respond(f"Could not remove coins from locker {code}")
-        
-    if(unlockstatus == 'completed'):
+    if(unlockstatus == 'completed' and actionstatus == 'success'):
         await event.message.respond(f"Coins removed from locker {code}")
         await event.message.respond(f"Type /balance to know your balance.")
     
