@@ -16,6 +16,7 @@ from withdrawnft import WithdrawNFT
 from bet import Bet
 from playcoin.balance import Balance
 from playcoin.unlock import Unlock
+from playcoin.lock import Lock
 
 #https://patchwork.systems/programming/hikari-discord-bot/introduction-and-basic-bot.html
 
@@ -52,68 +53,11 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
         await Balance(wallet= walletName, event=event)
     if(command[0] == "/unlock"):
         await Unlock(wallet= walletName, code= command[1], event=event)
-    
-
-    
-    if(command[0] == '/bank'):
-        if(len(command) > 1):
-            phrase = command[1]
-            # invalid phrase check for bank commands. if its an invalid command help is returned.
-            if(not phrase in bankphrases):
-                await event.message.respond('Invalid Command')
-                helpContent = await Help()
-                await event.message.respond(helpContent)
-            # call respective handlers depending upon the command phrase
-            if(phrase == 'deposit'):
-                await Deposit(wallet= walletName, event=event)
-            if(phrase == 'showcoins'):
-                await ShowCoins(wallet= walletName, event=event)
-            if(phrase == 'balance'):
-                await ShowCoins(wallet= walletName, event=event)
-            if(phrase == 'whatsmywallet'):
-                await MyWallet(wallet= walletName, event=event)
-            if(phrase == 'statement'):
-                page = 1
-                # default page to 1 in case of no parameter
-                if(len(command) == 2):
-                    page = "1"
-                if(len(command) > 2):
-                    page = command[2]
-                await Statement(wallet= walletName, event=event, page= page)
-            if(phrase == 'deletewallet'):
-                await DeleteWallet(wallet= walletName, event=event)
-            if(phrase == 'deletebank'):
-                await DeleteWallet(wallet= walletName, event=event)
-
-            if(phrase == 'withdraw'):
-                if(len(command) == 2):
-                    await event.message.respond('You must provide an amount to withdraw Cloudcoins')
-                    return
-                amount = command[2]
-                await Withdraw(wallet= walletName, event=event, amount= amount)
-            if(phrase == 'transfer'):
-                towallet = command[3]
-                amount = command[2]
-                if(len(command) == 2):
-                    await event.message.respond('You must provide a wallet name for transfer')
-                    return
-                await Transfer(wallet=walletName, event=event, towallet= towallet, amount= amount)
-            if(phrase == 'pay'):
-                amount = command[2]
-                await Pay(wallet= walletName, event=event, amount=amount)
-            if(phrase == 'bet'):
-                if(len(command) == 2):
-                    await event.message.respond('You must provide an amount')
-                    return
-                amount = command[2]
-                
-                description = 'Bet placed by ' + walletName + ' for ' + str(amount) + ' Cloudcoins'
-                await Bet(wallet= walletName, event=event, towallet='Default', amount=amount, description= description)
-
-            if(phrase == 'move'):
-                towallet = command[3]
-                amount = command[2]
-                await Move(wallet=walletName, event=event, towallet= towallet, amount= amount)
+    if(command[0] == "/lock"):
+        print("Removing coins")
+        code = command[1]
+        amount = command[2]
+        await Lock(wallet= walletName,code=code, amount=amount, event=event)
 
     if(command[0] == '/help'):
         if(len(command) == 1):
