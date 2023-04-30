@@ -1,7 +1,7 @@
 import hikari
 import requests
 import time
-from constants import baseUrl, pcbaseUrl
+from constants import pcbaseUrl
 # shows the name of the users own wallet
 async def Unlock(wallet,code, event: hikari.DMMessageCreateEvent):
     walletName = str(wallet)
