@@ -48,6 +48,8 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
 
     bankphrases = ['deposit', 'showcoins', 'balance','whatsmywallet','statement', 'deletewallet', 'withdraw', 'transfer', 'pay','help', 'move', 'bet']
     # check for main phrase to be bank command if so process wallet commands
+    if(command[0] == "/mywallet"):
+        await event.message.respond(walletName)    
     if(command[0] == "/balance"):
         print("Checking balance")
         await Balance(wallet= walletName, event=event)
