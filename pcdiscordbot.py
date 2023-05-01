@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import hikari
 import os
 from help import Help, ChooseHelp, NFTHelp
