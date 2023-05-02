@@ -56,12 +56,17 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
         print("Checking balance")
         await Balance(wallet= walletName, event=event)
     if(command[0] == "/unlock"):
+        if(len(command) < 2):
+            await event.message.respond('Insufficient parameters.')    
         await Unlock(wallet= walletName, code= command[1], event=event)
     if(command[0] == "/lock"):
-        print("Removing coins")
-        code = command[1]
-        amount = command[2]
-        await Lock(wallet= walletName,code=code, amount=amount, event=event)
+        if(len(command) < 3):
+            await event.message.respond('Insufficient parameters.')    
+        else:
+            print("Removing coins")
+            code = command[1]
+            amount = command[2]
+            await Lock(wallet= walletName,code=code, amount=amount, event=event)
 
     if(command[0] == '/help'):
         if(len(command) == 1):

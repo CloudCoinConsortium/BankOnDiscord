@@ -28,9 +28,9 @@ async def Lock(wallet,code,amount, event: hikari.DMMessageCreateEvent):
             time.sleep(2)
         if(lockstatus == 'error'):
             message = taskresponsejson['payload']['data']['message']
-            await event.message.respond(f"Could not remove coins from locker {code}. {message}")
+            await event.message.respond(f"Could not lock coins from locker {code}. {message}")
         if(lockstatus == 'completed' and actionstatus == 'success'):
-            await event.message.respond(f"Coins removed from locker {code}")
+            await event.message.respond(f"Coins locked into locker {code}")
             await event.message.respond(f"Type /balance to know your balance.")
     else:
         await event.message.respond(f"Unable to lock coins into {code}")
