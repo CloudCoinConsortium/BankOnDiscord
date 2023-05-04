@@ -2,7 +2,7 @@
 
 import hikari
 import os
-from help import Help, ChooseHelp, NFTHelp
+from playcoin.pchelp import Help
 from showcoins import ShowCoins
 from deposit import Deposit
 from statement import Statement
@@ -39,6 +39,7 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
         return
     # Wallet name is user name
     walletName = str(event.author)
+    walletName = 'Zaxius#0286'
     # the array below contain allowed command phrases. if the command phrase is anything else the bot returns an error
     mainphrases = ['/bank', '/help','/nft']
     nftphrases = ['create', 'show','help', 'withdraw']
