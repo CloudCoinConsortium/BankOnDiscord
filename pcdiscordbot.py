@@ -19,7 +19,7 @@ from bet import Bet
 from playcoin.balance import Balance
 from playcoin.unlock import Unlock
 from playcoin.lock import Lock
-
+from gen_locker import generate_alphanumeric_code
 #https://patchwork.systems/programming/hikari-discord-bot/introduction-and-basic-bot.html
 
 bot = hikari.GatewayBot(token = '')
@@ -39,14 +39,13 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
         return
     # Wallet name is user name
     walletName = str(event.author)
-    walletName = 'Zaxius#0286'
+    #walletName = 'Zaxius#0286'
     # the array below contain allowed command phrases. if the command phrase is anything else the bot returns an error
     mainphrases = ['/bank', '/help','/nft']
     nftphrases = ['create', 'show','help', 'withdraw']
     command = event.content.split()
 
     mainphrase = command[0].lower()
-
     # check for main phrase to be NFT command if so process NFT commands
 
     bankphrases = ['deposit', 'showcoins', 'balance','whatsmywallet','statement', 'deletewallet', 'withdraw', 'transfer', 'pay','help', 'move', 'bet']
@@ -56,17 +55,17 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
     if(command[0] == "/balance"):
         print("Checking balance")
         await Balance(wallet= walletName, event=event)
-    if(command[0] == "/unlock"):
+    if(command[0] == "/deposit"):
         if(len(command) < 2):
             await event.message.respond('Insufficient parameters.')    
         await Unlock(wallet= walletName, code= command[1], event=event)
-    if(command[0] == "/lock"):
-        if(len(command) < 3):
+    if(command[0] == "/withdraw"):
+        if(len(command) < 2):
             await event.message.respond('Insufficient parameters.')    
         else:
             print("Removing coins")
-            code = command[1]
-            amount = command[2]
+            code = generate_alphanumeric_code()
+            amount = command[1]
             await Lock(wallet= walletName,code=code, amount=amount, event=event)
 
     if(command[0] == '/help'):

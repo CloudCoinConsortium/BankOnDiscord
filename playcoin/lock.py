@@ -5,8 +5,6 @@ from constants import pcbaseUrl
 # shows the name of the users own wallet
 async def Lock(wallet,code,amount, event: hikari.DMMessageCreateEvent):
     walletName = str(wallet)
-    print(code)
-    print(amount)
     walletJson = { 'name': walletName, 'amount': float(amount),'transmit_code': code}
     print(walletJson)
     fullUrl = pcbaseUrl + 'locker' 
