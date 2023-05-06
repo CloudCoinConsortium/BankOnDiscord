@@ -5,9 +5,9 @@ import os
 from playcoin.pchelp import Help
 from showcoins import ShowCoins
 from deposit import Deposit
-from statement import Statement
+from playcoin.statement import Statement
 from pay import Pay
-from move import Move
+from playcoin.move import Move
 from withdraw import Withdraw
 from deletewallet import DeleteWallet
 from mywallet import MyWallet
@@ -55,6 +55,25 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
     if(command[0] == "/balance"):
         print("Checking balance")
         await Balance(wallet= walletName, event=event)
+    if(command[0] == '/statement'):
+        page = 1
+                # default page to 1 in case of no parameter
+        if(len(command) == 2):
+            page = "1"
+            if(len(command) > 2):
+                page = command[2]
+        await Statement(wallet= walletName, event=event, page= page)
+    if(command[0] == '/transfer'):
+        towallet = command[2]
+        amount = command[1]
+        if(len(command) == 2):
+            await event.message.respond('You must provide a wallet name for transfer')
+            return
+        await Move(wallet=walletName, event=event, towallet= towallet, amount= amount)
+    if(command[0] == '/pay'):
+        amount = command[1]
+        await Pay(wallet= walletName, event=event, amount=amount)
+
     if(command[0] == "/deposit"):
         if(len(command) < 2):
             await event.message.respond('Insufficient parameters.')    
@@ -71,9 +90,6 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
     if(command[0] == '/help'):
         if(len(command) == 1):
             helpContent = await Help()
-            await event.message.respond(helpContent)
-        else:
-            helpContent = await ChooseHelp(command[1])
             await event.message.respond(helpContent)
     # sample ping for bot health check
     if event.content.startswith("ping"):
