@@ -9,7 +9,7 @@ import time
 async def Move(wallet, event: hikari.DMMessageCreateEvent, towallet: str, amount):
     transferUrl = pcbaseUrl + 'transfer'
     print('moving from :'+ str(wallet) + ' to :', towallet, transferUrl )
-    moveJson = {'srcname': wallet , 'dstname': towallet , 'amount' : int(amount), 'tag': ''}
+    moveJson = {'srcname': wallet , 'dstname': towallet , 'amount' : float(amount), 'tag': ''}
     print(moveJson)
     json_string = json.dumps(moveJson) 
     moveresponse = requests.post(transferUrl, json_string)
