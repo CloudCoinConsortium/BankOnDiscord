@@ -6,16 +6,8 @@ from playcoin.pchelp import Help
 from showcoins import ShowCoins
 from deposit import Deposit
 from playcoin.statement import Statement
-from pay import Pay
+from playcoin.pay import Pay
 from playcoin.move import Move
-from withdraw import Withdraw
-from deletewallet import DeleteWallet
-from mywallet import MyWallet
-from transfer import Transfer
-from createnft import CreateNFT
-from shownfts import ShowNFT
-from withdrawnft import WithdrawNFT
-from bet import Bet
 from playcoin.balance import Balance
 from playcoin.unlock import Unlock
 from playcoin.lock import Lock

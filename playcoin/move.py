@@ -1,4 +1,3 @@
-import tarfile
 from unicodedata import numeric
 import hikari
 import requests
@@ -6,13 +5,16 @@ from constants import pcbaseUrl
 import json
 import time
 # move cloudcoins to another wallet 
+
 async def Move(wallet, event: hikari.DMMessageCreateEvent, towallet: str, amount):
     transferUrl = pcbaseUrl + 'transfer'
     print('moving from :'+ str(wallet) + ' to :', towallet, transferUrl )
     moveJson = {'srcname': wallet , 'dstname': towallet , 'amount' : int(amount), 'tag': ''}
+    print(moveJson)
     json_string = json.dumps(moveJson) 
     moveresponse = requests.post(transferUrl, json_string)
     moveresponsejson = moveresponse.json()
+    print(moveresponsejson)
     depositstatus = moveresponsejson['payload']['status']
     TASK_URL = pcbaseUrl + 'tasks/' + moveresponsejson['payload']['id']
     # poll for task status till status is changed to completed
@@ -32,6 +34,6 @@ async def Move(wallet, event: hikari.DMMessageCreateEvent, towallet: str, amount
 
         if(depositstatus == 'completed'):
             if(taskresponsejson['status'] == 'success'):
-                await event.message.respond("Move completed: " + str(taskresponsejson['payload']['data']['amount']) + ' coins moved to ' + target)
+                await event.message.respond("Move completed: " + str(amount) + ' coins moved to ' + target)
 
 
