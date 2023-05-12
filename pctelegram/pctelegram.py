@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from constants import prefix_telegram
 from balance import balance_command
+from withdraw import withdraw_command
 from deposit import deposit_command
 load_dotenv()
 
@@ -37,6 +38,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("mywallet", mywallet_command))
     dispatcher.add_handler(CommandHandler("balance", balance_command))
     dispatcher.add_handler(CommandHandler("deposit", deposit_command))
+    dispatcher.add_handler(CommandHandler("withdraw", withdraw_command))
 
     updater.start_polling()
 
