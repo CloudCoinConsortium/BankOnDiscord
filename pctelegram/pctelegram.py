@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 from constants import prefix_telegram
 from balance import balance_command
 from withdraw import withdraw_command
+from transfer import transfer_command
 from deposit import deposit_command
+from pay import pay_command
 load_dotenv()
 
 def getWalletName(username: str) -> None:
@@ -39,6 +41,10 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("balance", balance_command))
     dispatcher.add_handler(CommandHandler("deposit", deposit_command))
     dispatcher.add_handler(CommandHandler("withdraw", withdraw_command))
+    dispatcher.add_handler(CommandHandler("transfer", transfer_command))
+    dispatcher.add_handler(CommandHandler("pay", pay_command))
+    
+    
 
     updater.start_polling()
 
