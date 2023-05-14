@@ -24,7 +24,7 @@ async def lockHelp():
     return '\n\n**🧾 WITHDRAW**\n`/withdraw <amount>`\nRemoves coins from your wallet and returns a code that you can give to your friends. Specify the amount of coins you want to withdraw in the command. Sample:\n/withdraw 99.0921'
 
 async def balanceHelp():
-    return '\n\n**🔎 BALANCE**\n`/bank balance` Returns the number of coins in  your Coin Bank.\nNo extra information is required.'
+    return '\n\n**🔎 BALANCE**\n`/balance` Returns the number of coins in  your Coin Bank.\nNo extra information is required.'
 
 async def MyWalletHelp():
     return '\n\n** 🧾 MY WALLET **\n `/mywallet` shows the name of your wallet.'
