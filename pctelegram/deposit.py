@@ -50,8 +50,8 @@ def deposit_command(update: Update, context: CallbackContext) -> None:
         if(unlockstatus == 'error'):
             update.message.reply_text(f"Could not remove coins from locker {code}")
         if(unlockstatus == 'completed' and actionstatus == 'success'):
-            update.message.reply_text(f"Coins removed from locker {code}")
-            update.message.reply_text(f"Type /balance to know your balance.")
+            update.message.reply_text(f"Coins deposited.")
+            update.message.reply_text(f"Type /balance to see the new balance.")
     else:
         update.message.reply_text(f"Can not remove coins from locker {code}")
     

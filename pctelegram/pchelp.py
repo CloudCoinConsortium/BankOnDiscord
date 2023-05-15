@@ -5,7 +5,8 @@ def Help():
     lockContent = lockHelp()
     depositContent = depositHelp()
     myWalletContent = MyWalletHelp()
-    return mainContent  + balanceContent + lockContent + depositContent + transferContent + myWalletContent
+    statementContent = StatementHelp()
+    return mainContent  + balanceContent + lockContent + depositContent + transferContent + myWalletContent + statementContent
 
 def MainHelp():
     return '**✳️ WELCOME TO PLAYCOIN BOT ✳️**\nThis bot allows you to Remove or put your Playcoins in a locker. This software is provided free of charge with all bugs, defects and vulnerabilities. \n\n**BASIC COMMANDS**'
@@ -25,6 +26,8 @@ def balanceHelp():
 def MyWalletHelp():
     return '\n\n** 🧾 MY WALLET **\n `/mywallet` shows the name of your wallet.'
 
+def StatementHelp():
+    return '\n\n** 🧾 STATEMENT **\n `/statement` shows the last 10 transactions of your wallet.'
 
 
 

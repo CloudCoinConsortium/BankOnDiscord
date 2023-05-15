@@ -53,7 +53,7 @@ def withdraw_command(update: Update, context: CallbackContext) -> None:
             message = taskresponsejson['payload']['data']['message']
             update.message.reply_text(f"Could not lock coins from locker {code}. {message}")
         if(lockstatus == 'completed' and actionstatus == 'success'):
-            update.message.reply_text(f"Coins locked into locker {code}")
-            update.message.reply_text(f"Type /balance to know your balance.")
+            update.message.reply_text(f"Coins withdrawn into Coin Code {code}")
+            update.message.reply_text(f"Type /balance to see the new balance.")
     else:
         update.message.reply_text(f"Unable to lock coins into {code}")
