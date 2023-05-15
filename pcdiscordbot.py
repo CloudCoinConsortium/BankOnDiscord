@@ -11,7 +11,9 @@ from playcoin.move import Move
 from playcoin.balance import Balance
 from playcoin.unlock import Unlock
 from playcoin.lock import Lock
+from playcoin.send import Send
 from gen_locker import generate_alphanumeric_code
+from constants import prefix_discord
 #https://patchwork.systems/programming/hikari-discord-bot/introduction-and-basic-bot.html
 
 bot = hikari.GatewayBot(token = '')
@@ -30,10 +32,10 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
     if not event.content:
         return
     # Wallet name is user name
-    walletName = str(event.author)
+    walletName = prefix_discord + str(event.author)
     #walletName = 'Zaxius#0286'
     # the array below contain allowed command phrases. if the command phrase is anything else the bot returns an error
-    mainphrases = ['/bank', '/help','/nft']
+    mainphrases = ['/mywallet', '/help','/balance', 'statement','/transfer','/deposit', '/withdraw', '/pay']
     nftphrases = ['create', 'show','help', 'withdraw']
     command = event.content.split()
 
@@ -43,18 +45,23 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
     bankphrases = ['deposit', 'showcoins', 'balance','whatsmywallet','statement', 'deletewallet', 'withdraw', 'transfer', 'pay','help', 'move', 'bet']
     # check for main phrase to be bank command if so process wallet commands
     if(command[0] == "/mywallet"):
-        await event.message.respond(walletName)    
+        await event.message.respond(str(event.author))    
     if(command[0] == "/balance"):
-        print("Checking balance")
         await Balance(wallet= walletName, event=event)
     if(command[0] == '/statement'):
         page = 1
-                # default page to 1 in case of no parameter
         if(len(command) == 2):
             page = "1"
             if(len(command) > 2):
                 page = command[2]
         await Statement(wallet= walletName, event=event, page= page)
+    if(command[0] == '/send'):
+        towallet = command[2]
+        amount = command[1]
+        if(len(command) == 2):
+            await event.message.respond('You must provide a wallet name for transfer')
+            return
+        await Send(wallet=walletName, event=event, towallet= towallet, amount= amount)
     if(command[0] == '/transfer'):
         towallet = command[2]
         amount = command[1]

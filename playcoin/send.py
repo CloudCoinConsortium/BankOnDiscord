@@ -1,25 +1,15 @@
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from unicodedata import numeric
+import hikari
 import requests
 from constants import pcbaseUrl
-from lib import getWalletName, getSendWalletName
-import time
 import json
-# shows total coins in the user balance
+import time
+from playcoin.lib import getSendWalletName
+# move cloudcoins to another wallet 
 
-def send_command(update: Update, context: CallbackContext) -> None:
-    wallet = getWalletName(update)
-    amount = context.args[0]
-    target = context.args[1]
-    towallet = getSendWalletName(target)
-    wallet = wallet.replace("#","%23")
-    # towallet = towallet.replace("#","%23")
-    
-    print(wallet)
-    print(towallet)
-    # make Check wallet api call
+async def Send(wallet, event: hikari.DMMessageCreateEvent, towallet: str, amount):
     transferUrl = pcbaseUrl + 'transfer'
-    amount = context.args[0]
+    towallet = getSendWalletName(towallet)
     print('moving from :'+ str(wallet) + ' to :', towallet, transferUrl )
     moveJson = {'srcname': wallet , 'dstname': towallet , 'amount' : float(amount), 'tag': ''}
     print(moveJson)
@@ -37,7 +27,7 @@ def send_command(update: Update, context: CallbackContext) -> None:
         depositstatus = taskresponsejson['payload']['status']
         # in case of error show appropriate message to user
         if(depositstatus == 'error'):
-            update.message.reply_text("Move failed: " + taskresponsejson['payload']['data']['message'])
+            await event.message.respond("Move failed: " + taskresponsejson['payload']['data']['message'])
 
         time.sleep(1)
         target = towallet
@@ -46,6 +36,6 @@ def send_command(update: Update, context: CallbackContext) -> None:
 
         if(depositstatus == 'completed'):
             if(taskresponsejson['status'] == 'success'):
-                update.message.reply_text("Move completed: " + str(amount) + ' coins moved to ' + target)
+                await event.message.respond("Move completed: " + str(amount) + ' coins moved to ' + towallet)
 
 
