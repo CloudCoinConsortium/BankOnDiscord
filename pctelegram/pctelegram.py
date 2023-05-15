@@ -9,6 +9,7 @@ from withdraw import withdraw_command
 from transfer import transfer_command
 from deposit import deposit_command
 from pay import pay_command
+from send import send_command
 load_dotenv()
 
 def getWalletName(username: str) -> None:
@@ -43,9 +44,8 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("withdraw", withdraw_command))
     dispatcher.add_handler(CommandHandler("transfer", transfer_command))
     dispatcher.add_handler(CommandHandler("pay", pay_command))
+    dispatcher.add_handler(CommandHandler("send", send_command))
     
-    
-
     updater.start_polling()
 
     updater.idle()

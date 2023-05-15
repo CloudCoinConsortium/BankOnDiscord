@@ -6,7 +6,8 @@ def Help():
     depositContent = depositHelp()
     myWalletContent = MyWalletHelp()
     statementContent = StatementHelp()
-    return mainContent  + balanceContent + lockContent + depositContent + transferContent + myWalletContent + statementContent
+    sendContent = SendHelp()
+    return mainContent  + balanceContent + lockContent + depositContent + transferContent + sendContent + myWalletContent + statementContent
 
 def MainHelp():
     return '**✳️ WELCOME TO PLAYCOIN BOT ✳️**\nThis bot allows you to Remove or put your Playcoins in a locker. This software is provided free of charge with all bugs, defects and vulnerabilities. \n\n**BASIC COMMANDS**'
@@ -29,5 +30,7 @@ def MyWalletHelp():
 def StatementHelp():
     return '\n\n** 🧾 STATEMENT **\n `/statement` shows the last 10 transactions of your wallet.'
 
+def SendHelp():
+    return '\n\n** 🧾 SEND **\n `/send <amount> <user@platform>` Send the amount of coins to another wallet residing on a different bot.\nsuch as: \n/send 0.05 johndoe@discord.com'
 
 
