@@ -11,6 +11,7 @@ def send_command(update: Update, context: CallbackContext) -> None:
     wallet = getWalletName(update)
     amount = context.args[0]
     target = context.args[1]
+    receiver = target
     towallet = getSendWalletName(target)
     wallet = wallet.replace("#","%23")
     # towallet = towallet.replace("#","%23")
@@ -46,6 +47,6 @@ def send_command(update: Update, context: CallbackContext) -> None:
 
         if(depositstatus == 'completed'):
             if(taskresponsejson['status'] == 'success'):
-                update.message.reply_text("Move completed: " + str(amount) + ' coins moved to ' + target)
+                update.message.reply_text("Move completed: " + str(amount) + ' coins moved to ' + receiver)
 
 

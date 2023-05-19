@@ -9,6 +9,7 @@ from playcoin.lib import getSendWalletName
 
 async def Send(wallet, event: hikari.DMMessageCreateEvent, towallet: str, amount):
     transferUrl = pcbaseUrl + 'transfer'
+    receiver = towallet
     towallet = getSendWalletName(towallet)
     print('moving from :'+ str(wallet) + ' to :', towallet, transferUrl )
     moveJson = {'srcname': wallet , 'dstname': towallet , 'amount' : float(amount), 'tag': ''}
@@ -36,6 +37,6 @@ async def Send(wallet, event: hikari.DMMessageCreateEvent, towallet: str, amount
 
         if(depositstatus == 'completed'):
             if(taskresponsejson['status'] == 'success'):
-                await event.message.respond("Move completed: " + str(amount) + ' coins moved to ' + towallet)
+                await event.message.respond("Move completed: " + str(amount) + ' coins moved to ' + receiver)
 
 
