@@ -14,6 +14,8 @@ from playcoin.lock import Lock
 from playcoin.send import Send
 from gen_locker import generate_alphanumeric_code
 from constants import prefix_discord
+from playcoin.payinfo import SetupPayInfo
+
 #https://patchwork.systems/programming/hikari-discord-bot/introduction-and-basic-bot.html
 
 bot = hikari.GatewayBot(token = '')
@@ -44,6 +46,19 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
 
     bankphrases = ['deposit', 'showcoins', 'balance','whatsmywallet','statement', 'deletewallet', 'withdraw', 'transfer', 'pay','help', 'move', 'bet']
     # check for main phrase to be bank command if so process wallet commands
+
+    if(command[0] == "/setup_sales"):
+        if(len(command) < 2):
+            await event.message.respond('Insufficient parameters')
+        else:
+            payid = command[1]
+            payidval = payid.split('=')
+            if(len(payidval)) < 2:
+                await event.message.respond('Insufficient parameters')
+            else:
+                print(payidval)
+                await SetupPayInfo(wallet=walletName,event=event,userId=walletName,paypalId= str(payidval[1]))
+
     if(command[0] == "/mywallet"):
         await event.message.respond(str(event.author))    
     if(command[0] == "/balance"):
