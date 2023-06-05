@@ -13,12 +13,13 @@ from playcoin.unlock import Unlock
 from playcoin.lock import Lock
 from playcoin.send import Send
 from gen_locker import generate_alphanumeric_code
-from constants import prefix_discord
+from constants import prefix_discord, pay_url
+from playcoin.buy import Buy
 from playcoin.payinfo import SetupPayInfo
 
 #https://patchwork.systems/programming/hikari-discord-bot/introduction-and-basic-bot.html
 
-bot = hikari.GatewayBot(token = '')
+bot = hikari.GatewayBot(token = 'MTA3MjY5ODYzMDY4MDYyMTA2Ng.G8pSEd.c0fDDoqyo_A_jC2A2KPUx8lBn6_pJi4f9y71fk')
 
 @bot.listen(hikari.GuildMessageCreateEvent)
 async def print_message(event):
@@ -46,7 +47,10 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
 
     bankphrases = ['deposit', 'showcoins', 'balance','whatsmywallet','statement', 'deletewallet', 'withdraw', 'transfer', 'pay','help', 'move', 'bet']
     # check for main phrase to be bank command if so process wallet commands
-
+    if(command[0] == "/buy"):
+        print('Buying coins')
+        await Buy(wallet=walletName, event=event)
+        
     if(command[0] == "/setup_sales"):
         if(len(command) < 2):
             await event.message.respond('Insufficient parameters')

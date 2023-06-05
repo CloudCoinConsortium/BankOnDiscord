@@ -1,0 +1,31 @@
+.Product-container {
+    text-align: center;
+  }
+  
+  
+  .Product-content {
+    background-color: #F8FAFC;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    color: black;
+    margin: 0 40px;;
+  }
+ 
+.Product-content .product img{
+    width: 450px;
+    height: 450px;
+    border-radius: 10px;
+    margin-left: 0;
+
+}
+
+.Product-content .desc{
+    width: 30%;
+   
+}
+.Product-content .desc p{
+    font-size: 1.0rem;
+}
