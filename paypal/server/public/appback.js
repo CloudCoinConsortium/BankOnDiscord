@@ -1,11 +1,15 @@
 paypal
   .Buttons({
     // Sets up the transaction when a payment button is clicked
-    createOrder: function(data, actions) {
-      // This function sets up the details of the transaction
-      const urlParams = new URLSearchParams(window.location.search);
-      const orderID = urlParams.get('orderID');
-      return orderID;
+    createOrder: function (data, actions) {
+      return fetch("/api/orders", {
+        method: "post",
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response.id);
+          return response.id;
+        });
     },
 
     // Finalize the transaction after payer approval
@@ -29,6 +33,12 @@ paypal
               transaction.id +
               "\n\nSee console for all available details"
           );
+
+          // When ready to go live, remove the alert and show a success message within this page. For example:
+          // var element = document.getElementById('paypal-button-container');
+          // element.innerHTML = '';
+          // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+          // Or go to another URL:  actions.redirect('thank_you.html');
         });
     },
   })

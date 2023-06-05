@@ -4,6 +4,30 @@ import "dotenv/config"; // loads env variables from .env file
 const { CLIENT_ID, APP_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 
+export async function newOrder(body) {
+
+  const accessToken = await generateAccessToken();
+  const url = `${base}/v2/checkout/orders`;
+  console.log(body)
+  const response = await fetch(url, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      intent: "CAPTURE",
+      purchase_units: body,
+    }),
+  });
+  const data = await response.json();
+  console.log(data);
+  return data;
+
+
+
+}
+
 export async function createOrder() {
   const accessToken = await generateAccessToken();
   const url = `${base}/v2/checkout/orders`;
@@ -19,14 +43,14 @@ export async function createOrder() {
         {
           amount: {
             currency_code: "USD",
-            value: "100.00",
+            value: "1.50",
           },
         },
       ],
     }),
   });
   const data = await response.json();
-  console.log(data);
+  console.log('Data:',data);
   return data;
 }
 

@@ -10,9 +10,15 @@ console.log(CLIENT_ID)
 const app = express();
 
 app.use(express.static("public"));
-
+app.use(express.json());
 app.post("/api/orders", async (req, res) => {
   const order = await paypal.createOrder();
+  res.json(order);
+});
+
+app.post("/api/order", async (req, res) => {
+  console.log('Body:',JSON.stringify(req.body))
+  const order = await paypal.newOrder(req.body);
   res.json(order);
 });
 
