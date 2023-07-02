@@ -4,11 +4,12 @@ import "dotenv/config"; // loads env variables from .env file
 const { CLIENT_ID, APP_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 
-export async function newOrder(body) {
+export async function newOrder(body, cid, key) {
 
-  const accessToken = await generateAccessToken();
+  const accessToken = await generateUserAccessToken(cid, key);
   const url = `${base}/v2/checkout/orders`;
   console.log(body)
+  console.log(accessToken)
   const response = await fetch(url, {
     method: "post",
     headers: {
@@ -76,6 +77,19 @@ export async function generateAccessToken() {
     headers: {
       Authorization:
         "Basic " + Buffer.from(CLIENT_ID + ":" + APP_SECRET).toString("base64"),
+    },
+  });
+  const data = await response.json();
+  return data.access_token;
+}
+
+export async function generateUserAccessToken(cid, key) {
+  const response = await fetch(base + "/v1/oauth2/token", {
+    method: "post",
+    body: "grant_type=client_credentials",
+    headers: {
+      Authorization:
+        "Basic " + Buffer.from(cid + ":" + key).toString("base64"),
     },
   });
   const data = await response.json();

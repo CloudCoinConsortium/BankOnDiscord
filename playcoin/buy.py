@@ -2,12 +2,22 @@ import hikari
 import requests
 import json
 from constants import pcbaseUrl, pay_url
+from playcoin.orders import insert_order
+from playcoin.orderfunctions import get_keys_by_walletname
 # shows total coins in the user balance
 
 async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
     wallet = wallet.replace("#","%23")
-
-    url = "http://localhost:3000/api/order"
+    keys = get_keys_by_walletname(walletname=wallet)
+    print('printing keys')
+    key = ''
+    cid =''
+    for key in keys:
+      cid = key['cid']
+      key = key['key']
+      #print(f"CID: {key['cid']}, Key: {key['key']}")
+    url = "http://localhost:3000/api/order/?cid={}&key={}".format(cid, key)  
+    print(url)
     total_amount = str(qty * price)
     payload = json.dumps([
   {
@@ -52,7 +62,11 @@ async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
     #print(json.dumps(response.json()))
     if responseJson['status'] == "CREATED":
         orderId = responseJson['id']
-        
+        order_id  = insert_order(orderId=orderId, qty=qty, price=price,buyer= wallet, seller=seller, status=1)
+        if order_id is not None:
+          print("Order insertion succeeded. ID:", order_id)
+        else:
+          print("Order insertion failed.")        
         print('Order created:' + responseJson['id'])
         url = pay_url + '?orderID=' + responseJson['id']
         await event.message.respond("Please make a payment to :\n" + url)

@@ -5,9 +5,12 @@ import "dotenv/config"; // loads env variables from .env file
 import * as sqlite from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
-
+import axios from "axios";
 const { CLIENT_ID, APP_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
+const pcbaseUrl ='http://localhost:8004/api/v1/'
+const transferUrl = pcbaseUrl + 'transfer'
+
 console.log(CLIENT_ID)
 
 let db;
@@ -46,6 +49,44 @@ app.post("/api/orders/:orderId/capture", async (req, res) => {
     const order = await db.get('SELECT * FROM orders WHERE orderid = ?', orderId);
 
     if (order) {
+      console.log(order)
+      const sanitizedWallet = order.seller.replace('%23','#');
+      const sanitizedWallet2 = order.buyer.replace( '%23','#');
+
+  
+      const moveJson = {'srcname': sanitizedWallet , 'dstname': sanitizedWallet2 , 'amount' : parseInt(order.qty), 'tag': ''}
+      console.log(moveJson)
+      const json_string = JSON.stringify(moveJson);
+      const moveresponse = await axios.post(transferUrl, json_string);
+      const moveresponsejson = moveresponse.data;
+      let depositstatus = moveresponsejson.payload.status;
+    
+      const TASK_URL = pcbaseUrl + 'tasks/' + moveresponsejson.payload.id;
+      let taskresponsejson =''
+      while (depositstatus === 'running') {
+        const taskresponse = await axios.get(TASK_URL);
+         taskresponsejson = taskresponse.data;
+        depositstatus = taskresponsejson.payload.status;
+    
+        // In case of error, show appropriate message to the user
+        if (depositstatus === 'error') {
+          console.log('Transfer failed: ' + taskresponsejson.payload.data.message);
+        }
+    
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      if (depositstatus === 'completed') {
+        if (taskresponsejson.status === 'success') {
+          console.log(
+            'Transfer completed: ' +
+              taskresponsejson.payload.data.amount +
+              ' coins moved to ' 
+          );
+        }
+      }
+    
+      
       res.json(order);
     } else {
       res.status(404).send('Order not found');

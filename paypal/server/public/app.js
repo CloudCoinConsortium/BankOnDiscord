@@ -21,14 +21,8 @@ paypal
             orderData,
             JSON.stringify(orderData, null, 2)
           );
-          var transaction = orderData.purchase_units[0].payments.captures[0];
-          alert(
-            "Transaction " +
-              transaction.status +
-              ": " +
-              transaction.id +
-              "\n\nSee console for all available details"
-          );
+          alert("Purchase completed. Please check your wallet for details");
+          window.close(); 
         });
     },
   })
