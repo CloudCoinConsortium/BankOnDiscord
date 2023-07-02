@@ -2,7 +2,7 @@
 def getSendWalletName(input_str):
     parts = input_str.split("@")
     if len(parts) != 2:
-        raise print("Invalid input format. Expected: 'user@network'")
+        return input_str
 
     user = parts[0]
     network = parts[1]

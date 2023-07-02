@@ -16,10 +16,13 @@ from gen_locker import generate_alphanumeric_code
 from constants import prefix_discord, pay_url
 from playcoin.buy import Buy
 from playcoin.payinfo import SetupPayInfo
+from playcoin.save_keys import SaveKeys
+from decimal import Decimal
 
 #https://patchwork.systems/programming/hikari-discord-bot/introduction-and-basic-bot.html
 
-bot = hikari.GatewayBot(token = 'MTA3MjY5ODYzMDY4MDYyMTA2Ng.G8pSEd.c0fDDoqyo_A_jC2A2KPUx8lBn6_pJi4f9y71fk')
+bot = hikari.GatewayBot(token = '')
+
 
 @bot.listen(hikari.GuildMessageCreateEvent)
 async def print_message(event):
@@ -47,9 +50,18 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
 
     bankphrases = ['deposit', 'showcoins', 'balance','whatsmywallet','statement', 'deletewallet', 'withdraw', 'transfer', 'pay','help', 'move', 'bet']
     # check for main phrase to be bank command if so process wallet commands
+
+    if(command[0] == "/setup_paypal_keys"):
+        cid = command[1]
+        secret = command[2]
+        await SaveKeys(wallet=walletName,event=event ,cid = cid, key= secret)
+
     if(command[0] == "/buy"):
         print('Buying coins')
-        await Buy(wallet=walletName, event=event)
+        rate = Decimal(command[1])
+        qty = Decimal(command[2])
+        seller = command[3]
+        await Buy(wallet=walletName, event=event, qty= qty, price= rate, seller=seller)
         
     if(command[0] == "/setup_sales"):
         if(len(command) < 2):

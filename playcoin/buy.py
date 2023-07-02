@@ -4,12 +4,15 @@ import json
 from constants import pcbaseUrl, pay_url
 from playcoin.orders import insert_order
 from playcoin.orderfunctions import get_keys_by_walletname
+from playcoin.lib import getSendWalletName
+
 # shows total coins in the user balance
 
 async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
     wallet = wallet.replace("#","%23")
     keys = get_keys_by_walletname(walletname=wallet)
-    print('printing keys')
+    seller = getSendWalletName(seller)
+    print(seller)
     key = ''
     cid =''
     for key in keys:
