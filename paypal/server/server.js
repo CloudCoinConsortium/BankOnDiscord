@@ -50,50 +50,66 @@ app.post("/api/orders/:orderId/capture", async (req, res) => {
 
     if (order) {
       console.log(order)
-      const sanitizedWallet = order.seller.replace('%23','#');
-      const sanitizedWallet2 = order.buyer.replace( '%23','#');
-
+      if(order.status === '1') {
+        const sanitizedWallet = order.seller.replace('%23','#');
+        const sanitizedWallet2 = order.buyer.replace( '%23','#');
   
-      const moveJson = {'srcname': sanitizedWallet , 'dstname': sanitizedWallet2 , 'amount' : parseInt(order.qty), 'tag': ''}
-      console.log(moveJson)
-      const json_string = JSON.stringify(moveJson);
-      const moveresponse = await axios.post(transferUrl, json_string);
-      const moveresponsejson = moveresponse.data;
-      let depositstatus = moveresponsejson.payload.status;
     
-      const TASK_URL = pcbaseUrl + 'tasks/' + moveresponsejson.payload.id;
-      let taskresponsejson =''
-      while (depositstatus === 'running') {
-        const taskresponse = await axios.get(TASK_URL);
-         taskresponsejson = taskresponse.data;
-        depositstatus = taskresponsejson.payload.status;
-    
-        // In case of error, show appropriate message to the user
-        if (depositstatus === 'error') {
-          console.log('Transfer failed: ' + taskresponsejson.payload.data.message);
-        }
-    
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-
-      if (depositstatus === 'completed') {
-        if (taskresponsejson.status === 'success') {
-          console.log(
-            'Transfer completed: ' +
-              taskresponsejson.payload.data.amount +
-              ' coins moved to ' 
-          );
-        }
-      }
-    
+        const moveJson = {'srcname': sanitizedWallet , 'dstname': sanitizedWallet2 , 'amount' : parseInt(order.qty), 'tag': ''}
+        console.log(moveJson)
+        const json_string = JSON.stringify(moveJson);
+        const moveresponse = await axios.post(transferUrl, json_string);
+        const moveresponsejson = moveresponse.data;
+        let depositstatus = moveresponsejson.payload.status;
       
-      res.json(order);
+        const TASK_URL = pcbaseUrl + 'tasks/' + moveresponsejson.payload.id;
+        let taskresponsejson =''
+        while (depositstatus === 'running') {
+          const taskresponse = await axios.get(TASK_URL);
+           taskresponsejson = taskresponse.data;
+          depositstatus = taskresponsejson.payload.status;
+      
+          // In case of error, show appropriate message to the user
+          if (depositstatus === 'error') {
+            console.log('Transfer failed: ' + taskresponsejson.payload.data.message);
+          }
+      
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+  
+        if (depositstatus === 'completed') {
+          if (taskresponsejson.status === 'success') {
+            const result = await db.run(
+              'UPDATE orders SET status = ? WHERE orderid = ?',
+              2,
+              orderId
+            );
+          
+            if (result.changes === 0) {
+              console.log('could not change status')
+            } else {
+              console.log(`Order ${orderId} status updated to completed.`);
+            }
+      
+            console.log(
+              'Transfer completed: ' +
+                taskresponsejson.payload.data.amount +
+                ' coins moved to ' 
+            );
+          }
+        }
+        res.json(order);
+  
+      } 
+      if(order.status === '2') {
+        res.status(400).send({'msg':'Order already processed'});
+      }
     } else {
-      res.status(404).send('Order not found');
+      res.status(404).send({'msg':'Order not found'});
     }
   } catch (err) {
     console.log(err)
-    //res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 
   console.log('order successful', orderId)
