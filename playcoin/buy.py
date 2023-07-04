@@ -14,10 +14,11 @@ async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
     seller = getSendWalletName(seller)
     print(seller)
     # make Check wallet api call
-    checkWalletUrl = pcbaseUrl + 'wallets/' + wallet
+    checkWalletUrl = pcbaseUrl + 'wallets/' + seller.replace("#","%23")
     response = requests.get(checkWalletUrl)
     responsejson = response.json()
     balance = 0
+    print(balance)
     # in case of success show the balance else display 0
     if(responsejson['status'] == 'success'):
         balance = int(responsejson['payload']['balance'])
