@@ -22,11 +22,8 @@ export async function newOrder(body, cid, key) {
     }),
   });
   const data = await response.json();
-  console.log(data);
+  //console.log(data);
   return data;
-
-
-
 }
 
 export async function createOrder() {

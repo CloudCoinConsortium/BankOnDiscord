@@ -32,7 +32,7 @@ async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
       cid = key['cid']
       key = key['key']
       #print(f"CID: {key['cid']}, Key: {key['key']}")
-    url = "http://localhost:3000/api/order/?cid={}&key={}".format(cid, key)  
+    url = "{}api/order/?cid={}&key={}".format(pay_url, cid, key)  
     print(url)
     total_amount = str(qty * price)
     payload = json.dumps([

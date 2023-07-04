@@ -11,8 +11,6 @@ const base = "https://api-m.sandbox.paypal.com";
 const pcbaseUrl ='http://localhost:8004/api/v1/'
 const transferUrl = pcbaseUrl + 'transfer'
 
-console.log(CLIENT_ID)
-
 let db;
 
 async function setupDatabase() {
