@@ -13,6 +13,18 @@ async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
     keys = get_keys_by_walletname(walletname=wallet)
     seller = getSendWalletName(seller)
     print(seller)
+    # make Check wallet api call
+    checkWalletUrl = pcbaseUrl + 'wallets/' + wallet
+    response = requests.get(checkWalletUrl)
+    responsejson = response.json()
+    balance = 0
+    # in case of success show the balance else display 0
+    if(responsejson['status'] == 'success'):
+        balance = int(responsejson['payload']['balance'])
+
+    if(balance < qty):
+        await event.message.respond("Can not buy.\n")
+        return
     key = ''
     cid =''
     for key in keys:
