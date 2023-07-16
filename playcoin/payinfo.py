@@ -1,4 +1,3 @@
-import aiosqlite
 import hikari
 
 # Establish a connection to the SQLite database
