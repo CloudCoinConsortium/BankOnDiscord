@@ -95,16 +95,37 @@ app.post("/api/orders/:orderId/capture", async (req, res) => {
         }
   
         if (depositstatus === 'completed' && taskresponsejson.status === 'success') {
-          const result = await db.run('UPDATE orders SET status = ? WHERE orderid = ?', 2, orderId);
+            pool.query('UPDATE orders SET status = ? WHERE orderid = ?', [2, orderId], function (error, result) {
+              if (error) {
+                console.error('Error updating orders:', error);
+                return;
+              }
+              
+              if (result.affectedRows === 0) {
+                console.log('Could not change status');
+              } else {
+                console.log(`Order ${orderId} status updated to completed.`);
+              }
           
-          if (result.changes === 0) {
-            console.log('Could not change status');
-          } else {
-            console.log(`Order ${orderId} status updated to completed.`);
+              // Updating the amount in the sales_config table
+              pool.query('UPDATE sales_config SET amount = amount - ? WHERE uid = ?', [order.qty, sanitizedWallet], function(error, result) {
+                if (error) {
+                  console.error('Error updating sales_config:', error);
+                  return;
+                }
+          
+                if (result.affectedRows === 0) {
+                  console.log('Could not update amount in sales_config');
+                } else {
+                  console.log(`Amount updated in sales_config for wallet ${wallet}.`);
+                }
+              });
+          
+              console.log('Transfer completed: ' + taskresponsejson.payload.data.amount + ' coins moved to ');
+            });
           }
-      
-          console.log('Transfer completed: ' + taskresponsejson.payload.data.amount + ' coins moved to ');
-        }
+          
+          
         res.json(order);
   
       } else if (order && order.status === '2') {
