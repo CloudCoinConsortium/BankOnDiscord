@@ -22,9 +22,27 @@ export async function newOrder(body, cid, key) {
     }),
   });
   const data = await response.json();
-  //console.log(data);
+  console.log(data);
   return data;
 }
+
+export async function getcapturePayment(orderId, keys) {
+  const accessToken = await generateUserAccessToken(keys.cid, keys.secret);
+  const url = `${base}/v2/checkout/orders/${orderId}/capture`;
+  const response = await fetch(url, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  //console.log(data);
+  // The capture ID should be in the data object here.
+  const captureId = data.purchase_units[0].payments.captures[0].id;
+  return { orderId, captureId, accessToken };
+}
+
 
 export async function createOrder() {
   const accessToken = await generateAccessToken();
@@ -52,6 +70,23 @@ export async function createOrder() {
   return data;
 }
 
+export async function refundPayment(captureId, accessToken) {
+  //const accessToken = await generateAccessToken();
+  console.log(accessToken)
+  const url = `${base}/v2/payments/captures/${captureId}/refund`;
+  const response = await fetch(url, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  console.log('Refund Processed:',data);
+  return data;
+}
+
+
 export async function capturePayment(orderId) {
   const accessToken = await generateAccessToken();
   const url = `${base}/v2/checkout/orders/${orderId}/capture`;
@@ -63,7 +98,7 @@ export async function capturePayment(orderId) {
     },
   });
   const data = await response.json();
-  console.log(data);
+  console.log("Capture result:", JSON.stringify(data));
   return data;
 }
 

@@ -1,36 +1,41 @@
-import sqlite3
+import mysql.connector
 from datetime import datetime
 
 def insert_order(orderId, qty, price, buyer, seller, status):
     try:
-        # Connect to the SQLite database
-        conn = sqlite3.connect('orders.db')
+        # Connect to the MySQL database
+        conn = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="123456",
+            database="ccmarketplace"
+        )
         cursor = conn.cursor()
 
-# Create the "orders" table if it doesn't exist
+        # Create the "orders" table if it doesn't exist
         create_table_query = """
             CREATE TABLE IF NOT EXISTS orders (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                orderid TEXT,
-                qty REAL,
-                price REAL,
-                buyer TEXT,
-                seller TEXT,
-                datetime TEXT,
-                status TEXT
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                orderid VARCHAR(255),
+                qty FLOAT,
+                price FLOAT,
+                buyer VARCHAR(255),
+                seller VARCHAR(255),
+                datetime TIMESTAMP,
+                status VARCHAR(255)
             )
         """
         cursor.execute(create_table_query)
+
         # Get the current datetime
         datetime_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         # Insert a new row into the "orders" table
         insert_query = """
             INSERT INTO orders (orderid,qty, price, buyer, seller, datetime, status)
-            VALUES (?,?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        print(orderId)
-        data = (orderId, float(qty), float(price), buyer, seller, datetime_now, '1')
+        data = (orderId, float(qty), float(price), buyer, seller, datetime_now, status)
         cursor.execute(insert_query, data)
 
         # Commit the transaction
@@ -44,6 +49,6 @@ def insert_order(orderId, qty, price, buyer, seller, status):
 
         return last_inserted_id
 
-    except sqlite3.Error as e:
+    except mysql.connector.Error as e:
         print("Error during insertion:", e)
         return None
