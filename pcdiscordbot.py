@@ -12,11 +12,13 @@ from playcoin.balance import Balance
 from playcoin.unlock import Unlock
 from playcoin.lock import Lock
 from playcoin.send import Send
+from playcoin.savesales import SaveSalesOrder
 from gen_locker import generate_alphanumeric_code
 from constants import prefix_discord, pay_url
 from playcoin.buy import Buy
 from playcoin.payinfo import SetupPayInfo
 from playcoin.save_keys import SaveKeys
+from playcoin.showsaleorders import ShowSaleOrders
 from decimal import Decimal
 from playcoin.showsales import ShowSales
 #https://patchwork.systems/programming/hikari-discord-bot/introduction-and-basic-bot.html
@@ -45,7 +47,6 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
     #walletName = 'Zaxius#0286'
     # the array below contain allowed command phrases. if the command phrase is anything else the bot returns an error
     mainphrases = ['/mywallet', '/help','/balance', 'statement','/transfer','/deposit', '/withdraw', '/pay']
-    nftphrases = ['create', 'show','help', 'withdraw']
     command = event.content.split()
 
     mainphrase = command[0].lower()
@@ -58,6 +59,15 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
         cid = command[1]
         secret = command[2]
         await SaveKeys(wallet=walletName,event=event ,cid = cid, key= secret)
+
+    if(command[0] == "/post_saleorder"):
+        rate = command[1]
+        amount = command[2]
+        await SaveSalesOrder(wallet=str(event.author),event=event ,rate = rate, amount= amount)
+
+    if(command[0] == "/show_sellorders"):
+        await ShowSaleOrders(event=event , page = 1)
+
 
     if(command[0] == "/showsales"):
         print('Showing coins')

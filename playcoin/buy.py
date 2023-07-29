@@ -7,15 +7,16 @@ from playcoin.orderfunctions import get_keys_by_walletname, get_sales_config_by_
 from playcoin.lib import getSendWalletName
 
 async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
-    sales_config = get_sales_config_by_wallet(walletname=wallet)
+    seller = getSendWalletName(seller)
+    sales_config = get_sales_config_by_wallet(walletname=seller)
     if price < sales_config['rate']:
         await event.message.respond("Insufficient rate\n")
         return       
-    if price < sales_config['amount']:
+    if sales_config['amount'] < qty:
         await event.message.respond("Not enough coins for sale\n")
         return       
 
-    keys = get_keys_by_walletname(walletname=wallet)
+    keys = get_keys_by_walletname(walletname=seller)
     if(len(keys) == 0):
         await event.message.respond("This Wallet is not configured for sale. Please contact the seller\n")
         return       
