@@ -5,60 +5,60 @@ import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 import os
+from playcoin.dbpool import connection_pool
 
 load_dotenv()  # take environment variables from .env.
 
 def get_keys_by_walletname(walletname):
-    try:
-        conn = mysql.connector.connect(
-            host=os.getenv('HOST'), 
-            user=os.getenv('USER'), 
-            password=os.getenv('PASSWORD'), 
-            database=os.getenv('DATABASE')
-        )        
-        if conn.is_connected():
-            cursor = conn.cursor()
-            query = "SELECT cid, secret FROM ppkeys WHERE uid = %s"
-            print(query)
-            print(walletname)
-            cursor.execute(query, (walletname,))
-            rows = cursor.fetchall()
-            
-            keys = []
-            for row in rows:
-                cid, key_value = row
-                key = {'cid': cid, 'key': key_value}
-                keys.append(key)
-            print(keys)
-            # Return the list of dictionaries (keys)
-            return keys
-
-    except Error as e:
-        print("Error while connecting to MySQL", e)
-
-    finally:
-        if conn.is_connected():
-            cursor.close()
-            conn.close()
-            print("MySQL connection is closed")
-
-
-def get_keys_by_walletname1(walletname):
-    conn = sqlite3.connect('../ppkeys.db')
+    conn = connection_pool.get_connection() # Get a connection from the pool
     cursor = conn.cursor()
-    table_name = 'ppkeys'
-    select_statement = f"SELECT cid, key FROM {table_name} WHERE uid = ?"
-    cursor.execute(select_statement, (walletname,))
+    
+    query = "SELECT cid, secret FROM ppkeys WHERE uid = %s"
+    cursor.execute(query, (walletname,))
     rows = cursor.fetchall()
-    conn.close()
-    keys = []
-    for row in rows:
-        cid, key_value = row
-        key = {'cid': cid, 'key': key_value}
-        keys.append(key)
 
-    # Return the list of dictionaries (keys)
+    keys = [{'cid': cid, 'key': key_value} for cid, key_value in rows]
+
+    cursor.close()
+    conn.close()  # Return the connection to the pool
+
     return keys
+
+def get_sales_config_by_wallet(walletname):
+    conn = connection_pool.get_connection() # Get a connection from the pool
+    cursor = conn.cursor()
+
+    query = "SELECT rate, amount FROM sales_config WHERE uid = %s"
+    cursor.execute(query, (walletname,))
+    row = cursor.fetchone()
+
+    if row:
+        rate, amount = row
+        sales_config = {'rate': rate, 'amount': amount}
+    else:
+        sales_config = {'rate': 0, 'amount': 0}
+
+    cursor.close()
+    conn.close()  # Return the connection to the pool
+
+    return sales_config
+
+def get_sales_config_by_wallet1(walletname):
+    conn = connection_pool.get_connection() # Get a connection from the pool
+    cursor = conn.cursor()
+
+    query = "SELECT rate, amount FROM sales_config WHERE uid = %s"
+    cursor.execute(query, (walletname,))
+    rows = cursor.fetchall()
+
+    # Assuming that there is only one record for each uid
+    # If there are multiple records, you can modify this to return a list of dictionaries
+    config = [{'rate': rate, 'amount': amount} for rate, amount in rows]
+
+    cursor.close()
+    conn.close()  # Return the connection to the pool
+
+    return config
 
 
 def insert_order(orderId, qty, price, buyer, seller, status):

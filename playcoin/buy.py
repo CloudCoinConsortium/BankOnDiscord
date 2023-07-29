@@ -3,18 +3,28 @@ import requests
 import json
 from constants import pcbaseUrl, pay_url
 from playcoin.orders import insert_order
-from playcoin.orderfunctions import get_keys_by_walletname
+from playcoin.orderfunctions import get_keys_by_walletname, get_sales_config_by_wallet
 from playcoin.lib import getSendWalletName
 
-# shows total coins in the user balance
-
 async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
-    wallet = wallet.replace("#","%23")
+    sales_config = get_sales_config_by_wallet(walletname=wallet)
+    if price < sales_config['rate']:
+        await event.message.respond("Insufficient rate\n")
+        return       
+    if price < sales_config['amount']:
+        await event.message.respond("Not enough coins for sale\n")
+        return       
+
     keys = get_keys_by_walletname(walletname=wallet)
+    if(len(keys) == 0):
+        await event.message.respond("This Wallet is not configured for sale. Please contact the seller\n")
+        return       
+    wallet = wallet.replace("#","%23")
     seller = getSendWalletName(seller)
-    print(seller)
+    #print(seller)
     # make Check wallet api call
     checkWalletUrl = pcbaseUrl + 'wallets/' + seller.replace("#","%23")
+    #print(checkWalletUrl)
     response = requests.get(checkWalletUrl)
     responsejson = response.json()
     balance = 0
@@ -25,7 +35,7 @@ async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
 
     if(balance < qty):
         await event.message.respond("Can not buy.\n")
-        return
+        #return
     key = ''
     cid =''
     for key in keys:
@@ -33,7 +43,7 @@ async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
       key = key['key']
       #print(f"CID: {key['cid']}, Key: {key['key']}")
     url = "{}api/order/?cid={}&key={}".format(pay_url, cid, key)  
-    print(url)
+    #print(url)
     total_amount = str(qty * price)
     payload = json.dumps([
   {
@@ -67,7 +77,7 @@ async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
     ]
   }
 ])
-    print(payload)
+    #print(payload)
     headers = {
     'Content-Type': 'application/json'
     }
@@ -78,7 +88,7 @@ async def Buy(wallet, event: hikari.DMMessageCreateEvent, qty, price, seller):
     #print(json.dumps(response.json()))
     if responseJson['status'] == "CREATED":
         orderId = responseJson['id']
-        order_id  = insert_order(orderId=orderId, qty=qty, price=price,buyer= wallet, seller=seller, status=1)
+        order_id  = insert_order(orderId=orderId, qty=qty, price=price,buyer= wallet.replace("%23","#"), seller=seller, status=1)
         if order_id is not None:
           print("Order insertion succeeded. ID:", order_id)
         else:

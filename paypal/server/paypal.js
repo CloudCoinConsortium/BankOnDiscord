@@ -66,13 +66,11 @@ export async function createOrder() {
     }),
   });
   const data = await response.json();
-  console.log('Data:',data);
+  //console.log('Data:',data);
   return data;
 }
 
 export async function refundPayment(captureId, accessToken) {
-  //const accessToken = await generateAccessToken();
-  console.log(accessToken)
   const url = `${base}/v2/payments/captures/${captureId}/refund`;
   const response = await fetch(url, {
     method: "post",
@@ -82,7 +80,7 @@ export async function refundPayment(captureId, accessToken) {
     },
   });
   const data = await response.json();
-  console.log('Refund Processed:',data);
+  //console.log('Refund Processed:',data);
   return data;
 }
 

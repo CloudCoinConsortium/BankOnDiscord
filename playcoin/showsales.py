@@ -24,7 +24,7 @@ async def ShowSales(event: hikari.DMMessageCreateEvent, page: str):
     offset = (page_num - 1) * RECORDS_PER_PAGE
 
     # Prepare header and records list
-    statementheader = ["S.No.", "Order ID", "Qty", "Price", "Buyer", "Seller", "Date"]
+    statementheader = ["S.No.", "Qty", "Price", "Buyer", "Seller", "Date"]
     records = []
 
     # Connect to database and fetch records
@@ -37,7 +37,7 @@ async def ShowSales(event: hikari.DMMessageCreateEvent, page: str):
         ) 
         if conn.is_connected():
             cursor = conn.cursor()
-            query = "SELECT orderid, qty, price, buyer, seller, datetime FROM orders ORDER BY datetime DESC LIMIT %s OFFSET %s"
+            query = "SELECT qty, price, buyer, seller, datetime FROM orders ORDER BY datetime DESC LIMIT %s OFFSET %s"
             cursor.execute(query, (RECORDS_PER_PAGE, offset))
             rows = cursor.fetchall()
 

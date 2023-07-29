@@ -1,26 +1,16 @@
 import express from "express";
 import * as paypal from "./paypal.js";
 import fetch from "node-fetch";
-import "dotenv/config"; // loads env variables from .env file
-import * as sqlite from 'sqlite';
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import { config } from "dotenv";
 import axios from "axios";
-const { CLIENT_ID, APP_SECRET } = process.env;
-const base = "https://api-m.sandbox.paypal.com";
-const pcbaseUrl ='http://localhost:8004/api/v1/'
-const transferUrl = pcbaseUrl + 'transfer'
+import { pool } from './db.js';
 
-let db;
+config(); // Loads .env file
 
-async function setupDatabase() {
-  db = await open({
-    filename: '../../orders.db',
-    driver: sqlite3.Database,
-  });
-}
+const { CLIENT_ID, APP_SECRET, PCBASE_URL, base } = process.env;
+const pcbaseUrl = PCBASE_URL || '';
+const transferUrl = pcbaseUrl + 'transfer';
 
-await setupDatabase()
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -34,85 +24,98 @@ app.post("/api/orders", async (req, res) => {
 app.post("/api/order", async (req, res) => {
   const cid = req.query.cid;
   const key = req.query.key;
-
+  console.log(cid)
+  console.log(key)
   console.log('Body:',JSON.stringify(req.body))
   const order = await paypal.newOrder(req.body, cid, key);
   res.json(order);
 });
 
+async function getPPKeyByOrderId(orderId) {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT ppkeys.*
+        FROM ppkeys
+        INNER JOIN orders ON ppkeys.uid = orders.buyer
+        WHERE orders.orderid = ?
+      `;
+    
+      pool.query(sql, [orderId], function(error, results, fields) {
+        if (error) reject(error);
+        if (results.length > 0) {
+            resolve(results[0]);
+          } else {
+            resolve({uid: '', cid: '', secret: ''});
+          }
+      });
+    });
+  }
+
 app.post("/api/orders/:orderId/capture", async (req, res) => {
   const { orderId } = req.params;
-  //const captureData = await paypal.capturePayment(orderId);
-  try {
-    const order = await db.get('SELECT * FROM orders WHERE orderid = ?', orderId);
 
-    if (order) {
-      console.log(order)
-      if(order.status === '1') {
-        const sanitizedWallet = order.seller.replace('%23','#');
-        const sanitizedWallet2 = order.buyer.replace( '%23','#');
-  
+  pool.query('SELECT * FROM orders WHERE orderid = ?', [orderId], async (err, oresult) => {
+    if (err) {
+      console.log('Error during selection:', err);
+      res.status(500).send('An error occurred while fetching the order.');
+      return;
+    }
     
-        const moveJson = {'srcname': sanitizedWallet , 'dstname': sanitizedWallet2 , 'amount' : parseInt(order.qty), 'tag': ''}
-        console.log(moveJson)
+    if (oresult.length > 0) {
+      const order = oresult[0];
+      console.log(order);
+
+      if(order && order.status === '1') {
+        const sanitizedWallet = order.seller.replace('%23','#');
+        const sanitizedWallet2 = order.buyer.replace('%23','#');
+  
+        const moveJson = {'srcname': sanitizedWallet , 'dstname': sanitizedWallet2 , 'amount' : parseInt(order.qty), 'tag': ''};
+        console.log(moveJson);
         const json_string = JSON.stringify(moveJson);
         const moveresponse = await axios.post(transferUrl, json_string);
         const moveresponsejson = moveresponse.data;
         let depositstatus = moveresponsejson.payload.status;
       
         const TASK_URL = pcbaseUrl + 'tasks/' + moveresponsejson.payload.id;
-        let taskresponsejson =''
+        let taskresponsejson ='';
         while (depositstatus === 'running') {
           const taskresponse = await axios.get(TASK_URL);
-           taskresponsejson = taskresponse.data;
+          taskresponsejson = taskresponse.data;
           depositstatus = taskresponsejson.payload.status;
       
-          // In case of error, show appropriate message to the user
           if (depositstatus === 'error') {
             console.log('Transfer failed: ' + taskresponsejson.payload.data.message);
+            const keys = await getPPKeyByOrderId(orderId)
+            console.log('Got Keys: ',keys)
+            const capture = await paypal.getcapturePayment(orderId, keys)
+            paypal.refundPayment(capture.captureId, capture.accessToken)
           }
       
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
   
-        if (depositstatus === 'completed') {
-          if (taskresponsejson.status === 'success') {
-            const result = await db.run(
-              'UPDATE orders SET status = ? WHERE orderid = ?',
-              2,
-              orderId
-            );
+        if (depositstatus === 'completed' && taskresponsejson.status === 'success') {
+          const result = await db.run('UPDATE orders SET status = ? WHERE orderid = ?', 2, orderId);
           
-            if (result.changes === 0) {
-              console.log('could not change status')
-            } else {
-              console.log(`Order ${orderId} status updated to completed.`);
-            }
-      
-            console.log(
-              'Transfer completed: ' +
-                taskresponsejson.payload.data.amount +
-                ' coins moved to ' 
-            );
+          if (result.changes === 0) {
+            console.log('Could not change status');
+          } else {
+            console.log(`Order ${orderId} status updated to completed.`);
           }
+      
+          console.log('Transfer completed: ' + taskresponsejson.payload.data.amount + ' coins moved to ');
         }
         res.json(order);
   
-      } 
-      if(order.status === '2') {
+      } else if (order && order.status === '2') {
         res.status(400).send({'msg':'Order already processed'});
+      } else {
+        res.status(404).send({'msg':'Order not found'});
       }
     } else {
-      res.status(404).send({'msg':'Order not found'});
+      res.status(404).send('Order not found.');
     }
-  } catch (err) {
-    console.log(err)
-    res.status(500).json({ error: err.message });
-  }
-
-  console.log('order successful', orderId)
- // res.json({})
-  //res.json(captureData);
+  });
 });
 
 app.get("/api/token", async (req, res) => {
@@ -129,5 +132,5 @@ app.get("/api/token", async (req, res) => {
 
 });
 
-app.listen(3000);
+app.listen(3456);
 console.log('listening')

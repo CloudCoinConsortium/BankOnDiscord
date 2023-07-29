@@ -18,10 +18,13 @@ from playcoin.buy import Buy
 from playcoin.payinfo import SetupPayInfo
 from playcoin.save_keys import SaveKeys
 from decimal import Decimal
-
+from playcoin.showsales import ShowSales
 #https://patchwork.systems/programming/hikari-discord-bot/introduction-and-basic-bot.html
+from dotenv import load_dotenv
 
-bot = hikari.GatewayBot(token = '')
+load_dotenv()
+token = os.getenv('PCBOT_TOKEN')
+bot = hikari.GatewayBot(token = token)
 
 
 @bot.listen(hikari.GuildMessageCreateEvent)
@@ -56,6 +59,15 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
         secret = command[2]
         await SaveKeys(wallet=walletName,event=event ,cid = cid, key= secret)
 
+    if(command[0] == "/showsales"):
+        print('Showing coins')
+        if(len(command) ==2):
+            page = command[1]
+        else:
+            page = 1
+        await ShowSales(event=event, page=page)
+
+
     if(command[0] == "/buy"):
         print('Buying coins')
         rate = Decimal(command[1])
@@ -64,16 +76,12 @@ async def ping(event: hikari.DMMessageCreateEvent) -> None:
         await Buy(wallet=walletName, event=event, qty= qty, price= rate, seller=seller)
         
     if(command[0] == "/setup_sales"):
-        if(len(command) < 2):
+        if(len(command) < 3):
             await event.message.respond('Insufficient parameters')
         else:
-            payid = command[1]
-            payidval = payid.split('=')
-            if(len(payidval)) < 2:
-                await event.message.respond('Insufficient parameters')
-            else:
-                print(payidval)
-                await SetupPayInfo(wallet=walletName,event=event,userId=walletName,paypalId= str(payidval[1]))
+            rate = command[1]
+            qty = command[2]
+            await SetupPayInfo(wallet=walletName,event=event,rate=rate,amount= qty)
 
     if(command[0] == "/mywallet"):
         await event.message.respond(str(event.author))    
